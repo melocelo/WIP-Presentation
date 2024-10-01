@@ -1,0 +1,55 @@
+Pseudocode:
+1. Import necessary libraries
+    import os
+    import cv2
+    import numpy as np
+    import pandas as pd
+    from skimage import io, filters, measure, morphology
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+2. Select image folder since there are several files
+    input_dir = get_directory("Confocal Images")
+
+4. Create an empty DataFrame to store results
+    results_table = pd.DataFrame(columns=["Image Name", "Red", "Green", "Blue"])
+
+5. Get a list of image files in the folder
+    file_list = get_all_files(input_dir)
+
+6. Loop through each image file
+    for each file in file_list:
+        
+        a. Load the image
+            image = load_image(file)
+        
+        b. Split the image into 3 channels (RGB)
+            red_channel, green_channel, blue_channel = split_image_channels(image)
+        
+        c. Process the red channel (SOX2):
+            - Apply a threshold to binarize the red channel (SOX2 positive nuclei)
+            - Label distinct regions (connected components) for SOX2
+            - Count the number of cells (regions) in the red channel
+        
+        d. Process the green channel (NESTIN):
+            - Apply a threshold to binarize the green channel (detect NESTIN+ cells)
+            - Label distinct regions (connected components) for NESTIN+ cells
+            - Count the number of cells (regions) in the green channel
+        
+        e. Process the blue channel (DAPI):
+            - Apply a threshold to binarize the blue channel (detect nuclei)
+            - Label distinct regions (connected components) for nuclei
+            - Count the number of cells (regions) in the blue channel
+        
+        f. Store the results for the current image
+            results_table.append({
+                "Image Name": file,
+                "Red Channel Cells": red_channel_count,
+                "Green Channel Cells": green_channel_count,
+                "Blue Channel Cells": blue_channel_count
+            })
+        
+7. Save results to CSV file+
+    results_table.to_csv("cell_count_results.csv")
+
+8. Use seaborn package to print CSV result
